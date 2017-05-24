@@ -1,0 +1,7 @@
+.properties.properties.".properties.mysql_backups" = {"value": $mysql_backups} |
+.properties.properties.".properties.mysql_backups.scp.server" = {"value": $mysql_backups_scp_server} |
+.properties.properties.".properties.mysql_backups.scp.port" = {"value": $mysql_backups_scp_port} |
+.properties.properties.".properties.mysql_backups.scp.user" = {"value": $mysql_backups_scp_user} |
+.properties.properties.".properties.mysql_backups.scp.key" = {"value": $mysql_backups_scp_key} |
+.properties.properties.".properties.mysql_backups.scp.destination" = {"value": $mysql_backups_scp_destination} |
+.properties.properties.".properties.mysql_backups.scp.cron_schedule" = {"value": $mysql_backups_scp_cron_schedule}

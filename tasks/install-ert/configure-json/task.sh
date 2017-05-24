@@ -4,6 +4,7 @@ set -e
 
 json_file_path="pcf-pipelines/tasks/install-ert/json_templates/${pcf_iaas}/${terraform_template}"
 json_file_template="${json_file_path}/ert-template.json"
+jq_filter_path="pcf-pipelines/jq-filters"
 
 if [ ! -f "$json_file_template" ]; then
   echo "Error: can't find file=[${json_file_template}]"
@@ -43,53 +44,21 @@ sed -i \
   ${json_file}
 
 if [[ ${MYSQL_BACKUPS} == "scp" ]]; then
-  cat > mysql_filter <<-'EOF'
-    .properties.properties.".properties.mysql_backups" = {"value": $mysql_backups} |
-    .properties.properties.".properties.mysql_backups.scp.server" = {"value": $mysql_backups_scp_server} |
-    .properties.properties.".properties.mysql_backups.scp.port" = {"value": $mysql_backups_scp_port} |
-    .properties.properties.".properties.mysql_backups.scp.user" = {"value": $mysql_backups_scp_user} |
-    .properties.properties.".properties.mysql_backups.scp.key" = {"value": $mysql_backups_scp_key} |
-    .properties.properties.".properties.mysql_backups.scp.destination" = {"value": $mysql_backups_scp_destination} |
-    .properties.properties.".properties.mysql_backups.scp.cron_schedule" = {"value": $mysql_backups_scp_cron_schedule}
-EOF
-
-  jq \
-    --arg mysql_backups "$MYSQL_BACKUPS" \
-    --arg mysql_backups_scp_server "$MYSQL_BACKUPS_SCP_SERVER" \
-    --arg mysql_backups_scp_port "$MYSQL_BACKUPS_SCP_PORT" \
-    --arg mysql_backups_scp_user "$MYSQL_BACKUPS_SCP_USER" \
-    --arg mysql_backups_scp_key "$MYSQL_BACKUPS_SCP_KEY" \
-    --arg mysql_backups_scp_destination "$MYSQL_BACKUPS_SCP_DESTINATION" \
-    --arg mysql_backups_scp_cron_schedule "$MYSQL_BACKUPS_SCP_CRON_SCHEDULE" \
-    --from-file mysql_filter \
-    $json_file > config.json
-  mv config.json $json_file
+  source ${json_filter_path}/ert-mysql-backup-scp/apply_ert_mysql_backup_s3.sh
+  filter_file_path=${json_filter_path}/ert-mysql-backup-scp/properties.filter
+  apply_ert_mysql_backup_scp ${json_file} ${filter_file_path}
 fi
 
 if [[ ${MYSQL_BACKUPS} == "s3" ]]; then
-  echo "adding s3 mysql backup properties"
-  cat > mysql_filter <<-'EOF'
-    .properties.properties.".properties.mysql_backups" = {"value": $mysql_backups} |
-    .properties.properties.".properties.mysql_backups.s3.endpoint_url" = {"value": $mysql_backups_s3_endpoint_url} |
-    .properties.properties.".properties.mysql_backups.s3.bucket_name" = {"value": $mysql_backups_s3_bucket_name} |
-    .properties.properties.".properties.mysql_backups.s3.bucket_path" = {"value": $mysql_backups_s3_bucket_path} |
-    .properties.properties.".properties.mysql_backups.s3.access_key_id" = {"value": $mysql_backups_s3_access_key_id} |
-    .properties.properties.".properties.mysql_backups.s3.secret_access_key" = {"value": $mysql_backups_s3_secret_access_key} |
-    .properties.properties.".properties.mysql_backups.s3.cron_schedule" = {"value": $mysql_backups_s3_cron_schedule}
-EOF
-
-  jq \
-    --arg mysql_backups "$MYSQL_BACKUPS" \
-    --arg mysql_backups_s3_endpoint_url "$MYSQL_BACKUPS_S3_ENDPOINT_URL" \
-    --arg mysql_backups_s3_bucket_name "$MYSQL_BACKUPS_S3_BUCKET_NAME" \
-    --arg mysql_backups_s3_bucket_path "$MYSQL_BACKUPS_S3_BUCKET_PATH" \
-    --arg mysql_backups_s3_access_key_id "$MYSQL_BACKUPS_S3_ACCESS_KEY_ID" \
-    --arg mysql_backups_s3_secret_access_key "$MYSQL_BACKUPS_S3_SECRET_ACCESS_KEY" \
-    --arg mysql_backups_s3_cron_schedule "$MYSQL_BACKUPS_S3_CRON_SCHEDULE" \
-    --from-file mysql_filter \
-    $json_file > config.json
-  mv config.json $json_file
+  source ${json_filter_path}/ert-mysql-backup-s3/apply_ert_mysql_backup_s3.sh
+  filter_file_path=${json_filter_path}/ert-mysql-backup-s3/properties.filter
+  apply_ert_mysql_backup_s3 ${json_file} ${filter_file_path}
 fi
+
+source ${json_filter_path}/ert-certificates/apply_ert_certificates.sh
+filter_file_path=${json_filter_path}/ert-certificates/properties.filter
+apply_ert_certificates ${json_file} ${filter_file_path}
+
 
 cat > cert_filter <<-'EOF'
   .properties.properties.".properties.networking_point_of_entry.external_ssl.ssl_rsa_certificate".value = {
