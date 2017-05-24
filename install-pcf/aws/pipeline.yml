@@ -1,3 +1,30 @@
+groups:
+  - name: main
+    jobs:
+      - aws-pcf-prepare
+      - config-opsman
+      - config-director
+      - deploy-director
+      - import-stemcell
+      - upload-ert
+      - deploy-ert
+  - name: manage-ert-config
+    jobs:
+      - build-ert-config
+  - name: cleanup
+    jobs:
+      - aws-pcf-destroy
+  - name: all
+    jobs:
+      - aws-pcf-prepare
+      - config-opsman
+      - config-director
+      - deploy-director
+      - import-stemcell
+      - upload-ert
+      - deploy-ert
+      - aws-pcf-destroy
+      - build-ert-config
 resource_types:
 - name: pivnet
   type: docker-image
@@ -27,6 +54,16 @@ resources:
     endpoint: {{S3_ENDPOINT}}
     bucket: {{S3_OUTPUT_BUCKET}}
     versioned_file: terraform.tfstate
+
+- name: json_file 
+  type: s3
+  source:
+    disable_ssl: false
+    access_key_id: {{TF_VAR_aws_access_key}}
+    secret_access_key: {{TF_VAR_aws_secret_key}}
+    endpoint: {{S3_ENDPOINT}}
+    bucket: {{S3_OUTPUT_BUCKET}}
+    versioned_file: ert.json 
 
 - name: tool-om-beta
   type: github-release
@@ -220,12 +257,81 @@ jobs:
       trigger: true
       passed: [upload-ert]
     - get: terraform-state
+    - get: json_file 
 
   - task: prepare-rds
     file: pcf-pipelines/tasks/install-pcf-aws/prepare-rds/task.yml
     params:
       PEM: {{PEM}}
       ERT_DOMAIN: {{ERT_DOMAIN}}
+
+  - task: configure-ert
+    file: pcf-pipelines/tasks/install-ert/configure-ert/task.yml
+    params:
+      pcf_iaas: aws
+      pcf_ert_domain: {{ERT_DOMAIN}}
+      pcf_opsman_admin: {{OPSMAN_USER}}
+      pcf_opsman_admin_passwd: {{OPSMAN_PASSWORD}}
+
+  - task: deploy-ert
+    file: pcf-pipelines/tasks/apply-changes/task.yml
+    params:
+      OPSMAN_URI: {{OPSMAN_URI}}
+      OPSMAN_USERNAME: {{OPSMAN_USER}}
+      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+
+- name: aws-pcf-destroy
+  serial: true
+  ensure:
+    put: terraform-state
+    params:
+      file: terraform-state/terraform.tfstate
+  plan:
+  - aggregate:
+    - get: get-pip
+    - get: pcf-pipelines
+    - get: terraform-state
+  - task: aws-pcf-destroy
+    file: pcf-pipelines/tasks/install-pcf-aws/destroy-aws/task.yml
+    params:
+      TF_VAR_aws_access_key: {{TF_VAR_aws_access_key}}
+      TF_VAR_aws_secret_key: {{TF_VAR_aws_secret_key}}
+      TF_VAR_aws_key_name: {{TF_VAR_aws_key_name}}
+      TF_VAR_aws_cert_arn: {{TF_VAR_aws_cert_arn}}
+      TF_VAR_rds_db_username: {{TF_VAR_rds_db_username}}
+      TF_VAR_rds_db_password: {{TF_VAR_rds_db_password}}
+      TF_VAR_environment: {{TF_VAR_environment}}
+      TF_VAR_opsman_ami: {{TF_VAR_opsman_ami}}
+      TF_VAR_amis_nat: {{TF_VAR_amis_nat}}
+      TF_VAR_aws_region: {{TF_VAR_aws_region}}
+      TF_VAR_az1: {{TF_VAR_az1}}
+      TF_VAR_az2: {{TF_VAR_az2}}
+      TF_VAR_az3: {{TF_VAR_az3}}
+      TF_VAR_route53_zone_id: {{ROUTE_53_ZONE_ID}}
+      TF_VAR_vpc_cidr: {{TF_VAR_vpc_cidr}}
+      TF_VAR_public_subnet_cidr_az1: {{TF_VAR_public_subnet_cidr_az1}}
+      TF_VAR_public_subnet_cidr_az2: {{TF_VAR_public_subnet_cidr_az2}}
+      TF_VAR_public_subnet_cidr_az3: {{TF_VAR_public_subnet_cidr_az3}}
+      TF_VAR_ert_subnet_cidr_az1: {{TF_VAR_ert_subnet_cidr_az1}}
+      TF_VAR_ert_subnet_cidr_az2: {{TF_VAR_ert_subnet_cidr_az2}}
+      TF_VAR_ert_subnet_cidr_az3: {{TF_VAR_ert_subnet_cidr_az3}}
+      TF_VAR_services_subnet_cidr_az1: {{TF_VAR_services_subnet_cidr_az1}}
+      TF_VAR_services_subnet_cidr_az2: {{TF_VAR_services_subnet_cidr_az2}}
+      TF_VAR_services_subnet_cidr_az3: {{TF_VAR_services_subnet_cidr_az3}}
+      TF_VAR_infra_subnet_cidr_az1: {{TF_VAR_infra_subnet_cidr_az1}}
+      TF_VAR_rds_subnet_cidr_az1: {{TF_VAR_rds_subnet_cidr_az1}}
+      TF_VAR_rds_subnet_cidr_az2: {{TF_VAR_rds_subnet_cidr_az2}}
+      TF_VAR_rds_subnet_cidr_az3: {{TF_VAR_rds_subnet_cidr_az3}}
+  - put: terraform-state
+    params:
+      file: terraform-state-output/terraform.tfstate
+
+- name: build-ert-config
+  serial: true
+  plan:
+  - aggregate:
+    - get: pcf-pipelines 
+    - get: terraform-state
 
   - task: configure-json
     file: pcf-pipelines/tasks/install-ert/configure-json/task.yml
@@ -288,64 +394,4 @@ jobs:
       db_networkpolicyserverdb_password: {{TF_VAR_rds_db_password_networkpolicy}}
       db_nfsvolumedb_username: {{TF_VAR_rds_db_username_nfsvolume}}
       db_nfsvolumedb_password: {{TF_VAR_rds_db_password_nfsvolume}}   
-
-  - task: configure-ert
-    file: pcf-pipelines/tasks/install-ert/configure-ert/task.yml
-    params:
-      pcf_iaas: aws
-      pcf_ert_domain: {{ERT_DOMAIN}}
-      pcf_opsman_admin: {{OPSMAN_USER}}
-      pcf_opsman_admin_passwd: {{OPSMAN_PASSWORD}}
-
-  - task: deploy-ert
-    file: pcf-pipelines/tasks/apply-changes/task.yml
-    params:
-      OPSMAN_URI: {{OPSMAN_URI}}
-      OPSMAN_USERNAME: {{OPSMAN_USER}}
-      OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
-
-- name: aws-pcf-destroy
-  serial: true
-  ensure:
-    put: terraform-state
-    params:
-      file: terraform-state/terraform.tfstate
-  plan:
-  - aggregate:
-    - get: get-pip
-    - get: pcf-pipelines
-    - get: terraform-state
-  - task: aws-pcf-destroy
-    file: pcf-pipelines/tasks/install-pcf-aws/destroy-aws/task.yml
-    params:
-      TF_VAR_aws_access_key: {{TF_VAR_aws_access_key}}
-      TF_VAR_aws_secret_key: {{TF_VAR_aws_secret_key}}
-      TF_VAR_aws_key_name: {{TF_VAR_aws_key_name}}
-      TF_VAR_aws_cert_arn: {{TF_VAR_aws_cert_arn}}
-      TF_VAR_rds_db_username: {{TF_VAR_rds_db_username}}
-      TF_VAR_rds_db_password: {{TF_VAR_rds_db_password}}
-      TF_VAR_environment: {{TF_VAR_environment}}
-      TF_VAR_opsman_ami: {{TF_VAR_opsman_ami}}
-      TF_VAR_amis_nat: {{TF_VAR_amis_nat}}
-      TF_VAR_aws_region: {{TF_VAR_aws_region}}
-      TF_VAR_az1: {{TF_VAR_az1}}
-      TF_VAR_az2: {{TF_VAR_az2}}
-      TF_VAR_az3: {{TF_VAR_az3}}
-      TF_VAR_route53_zone_id: {{ROUTE_53_ZONE_ID}}
-      TF_VAR_vpc_cidr: {{TF_VAR_vpc_cidr}}
-      TF_VAR_public_subnet_cidr_az1: {{TF_VAR_public_subnet_cidr_az1}}
-      TF_VAR_public_subnet_cidr_az2: {{TF_VAR_public_subnet_cidr_az2}}
-      TF_VAR_public_subnet_cidr_az3: {{TF_VAR_public_subnet_cidr_az3}}
-      TF_VAR_ert_subnet_cidr_az1: {{TF_VAR_ert_subnet_cidr_az1}}
-      TF_VAR_ert_subnet_cidr_az2: {{TF_VAR_ert_subnet_cidr_az2}}
-      TF_VAR_ert_subnet_cidr_az3: {{TF_VAR_ert_subnet_cidr_az3}}
-      TF_VAR_services_subnet_cidr_az1: {{TF_VAR_services_subnet_cidr_az1}}
-      TF_VAR_services_subnet_cidr_az2: {{TF_VAR_services_subnet_cidr_az2}}
-      TF_VAR_services_subnet_cidr_az3: {{TF_VAR_services_subnet_cidr_az3}}
-      TF_VAR_infra_subnet_cidr_az1: {{TF_VAR_infra_subnet_cidr_az1}}
-      TF_VAR_rds_subnet_cidr_az1: {{TF_VAR_rds_subnet_cidr_az1}}
-      TF_VAR_rds_subnet_cidr_az2: {{TF_VAR_rds_subnet_cidr_az2}}
-      TF_VAR_rds_subnet_cidr_az3: {{TF_VAR_rds_subnet_cidr_az3}}
-  - put: terraform-state
-    params:
-      file: terraform-state-output/terraform.tfstate
+  - put: json_file
