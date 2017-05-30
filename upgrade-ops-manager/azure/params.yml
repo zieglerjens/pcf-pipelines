@@ -34,5 +34,7 @@ existing_opsman_vm_name: CHANGEME
 
 opsman_admin_password: CHANGEME
 opsman_admin_username: CHANGEME
+opsman_client_id:
+opsman_client_secret:
 opsman_passphrase: CHANGEME
 opsman_uri: CHANGEME

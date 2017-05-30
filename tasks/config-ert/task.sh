@@ -90,8 +90,7 @@ EOF
 
 om-linux \
   --target https://$OPS_MGR_HOST \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  ${CREDS} \
   --skip-ssl-validation \
   configure-product \
   --product-name cf \

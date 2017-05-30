@@ -71,6 +71,8 @@ jobs:
     params:
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_URI: {{opsman_uri}}
       PRODUCT_NAME: p-bosh
 
@@ -90,6 +92,8 @@ jobs:
     params:
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_URI: {{opsman_uri}}
 
   - aggregate:
@@ -98,6 +102,8 @@ jobs:
       params:
         OPSMAN_USERNAME: {{opsman_admin_username}}
         OPSMAN_PASSWORD: {{opsman_admin_password}}
+        OPSMAN_CLIENT_ID: {{opsman_client_id}}
+        OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
         OPSMAN_URI: {{opsman_uri}}
         OPSMAN_SETTINGS_FILENAME: installation.zip
     - task: exported-opsmgr-diagnostic-report
@@ -105,6 +111,8 @@ jobs:
       params:
         OPSMAN_USERNAME: {{opsman_admin_username}}
         OPSMAN_PASSWORD: {{opsman_admin_password}}
+        OPSMAN_CLIENT_ID: {{opsman_client_id}}
+        OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
         OPSMAN_URI: {{opsman_uri}}
 
   - task: create-cliaas-config
@@ -125,6 +133,8 @@ jobs:
     params:
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_SETTINGS_FILENAME: installation.zip
       OPSMAN_PASSPHRASE: {{opsman_passphrase}}
@@ -140,6 +150,8 @@ jobs:
     params:
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_URI: {{opsman_uri}}
 
   - task: apply-changes
@@ -147,4 +159,6 @@ jobs:
     params:
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       OPSMAN_URI: {{opsman_uri}}

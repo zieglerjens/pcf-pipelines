@@ -69,6 +69,8 @@ S3_OUTPUT_BUCKET:
 ERT_DOMAIN:
 OPSMAN_USER:
 OPSMAN_PASSWORD:
+opsman_client_id:
+opsman_client_secret:
 OPSMAN_URI:
 PEM:
 ERT_SSL_CERT:

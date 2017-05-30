@@ -19,3 +19,5 @@ params:
   pcf_ert_domain:
   pcf_opsman_admin:
   pcf_opsman_admin_passwd:
+  OPSMAN_CLIENT_ID:
+  OPSMAN_CLIENT_SECRET:

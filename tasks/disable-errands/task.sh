@@ -2,12 +2,17 @@
 
 set -eu
 
+if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+  CREDS="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+else
+  CREDS="--username ${OPSMAN_USERNAME} --password ${OPSMAN_PASSWORD}"
+fi
+
 enabled_errands=$(
   om-linux \
     --target "https://${OPSMAN_URI}" \
     --skip-ssl-validation \
-    --username "$OPSMAN_USERNAME" \
-    --password "$OPSMAN_PASSWORD" \
+    ${CREDS} \
     errands \
     --product-name "$PRODUCT_NAME" |
   tail -n+4 | head -n-1 | grep -v false | cut -d'|' -f2 | tr -d ' '
@@ -55,8 +60,7 @@ while read errand; do
   om-linux \
     --target "https://${OPSMAN_URI}" \
     --skip-ssl-validation \
-    --username "$OPSMAN_USERNAME" \
-    --password "$OPSMAN_PASSWORD" \
+    ${CREDS} \
     set-errand-state \
     --product-name "$PRODUCT_NAME" \
     --errand-name $errand \

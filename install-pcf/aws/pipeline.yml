@@ -142,12 +142,16 @@ jobs:
       ERT_DOMAIN: {{ERT_DOMAIN}}
       OPSMAN_USER: {{OPSMAN_USER}}
       OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
   - task: configure-director
     file: pcf-pipelines/install-pcf/aws/tasks/config-director/task.yml
     params:
       ERT_DOMAIN: {{ERT_DOMAIN}}
       OPSMAN_USER: {{OPSMAN_USER}}
       OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       AWS_KEY_NAME: {{TF_VAR_aws_key_name}}
       PEM: {{PEM}}
       AWS_REGION: {{TF_VAR_aws_region}}
@@ -175,6 +179,8 @@ jobs:
       pcf_ert_domain: {{ERT_DOMAIN}}
       pcf_opsman_admin: {{OPSMAN_USER}}
       pcf_opsman_admin_passwd: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
 
 - name: upload-ert
   serial_groups: [opsman]
@@ -195,6 +201,8 @@ jobs:
       OPS_MGR_HOST: {{OPSMAN_URI}}
       OPS_MGR_USR: {{OPSMAN_USER}}
       OPS_MGR_PWD: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       PIVNET_API_TOKEN: {{pivnet_token}}
       IAAS: "aws"
       NO_PROXY: ""
@@ -205,6 +213,8 @@ jobs:
       OPSMAN_URI: {{OPSMAN_URI}}
       OPSMAN_USERNAME: {{OPSMAN_USER}}
       OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       PRODUCT_NAME: cf
 
 - name: deploy-ert
@@ -253,6 +263,8 @@ jobs:
       pcf_ert_domain: {{ERT_DOMAIN}}
       pcf_opsman_admin: {{OPSMAN_USER}}
       pcf_opsman_admin_passwd: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       pcf_ert_ssl_cert: {{ERT_SSL_CERT}}
       pcf_ert_ssl_key: {{ERT_SSL_KEY}}
       pcf_az_1: {{TF_VAR_az1}}
@@ -311,6 +323,8 @@ jobs:
       pcf_ert_domain: {{ERT_DOMAIN}}
       pcf_opsman_admin: {{OPSMAN_USER}}
       pcf_opsman_admin_passwd: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
 
   - task: disable-errands
     file: pcf-pipelines/tasks/disable-errands/task.yml
@@ -319,6 +333,8 @@ jobs:
       OPSMAN_URI: {{OPSMAN_URI}}
       OPSMAN_USERNAME: {{OPSMAN_USER}}
       OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       ERRANDS_TO_DISABLE: {{ert_errands_to_disable}}
 
   - task: deploy-ert
@@ -327,6 +343,8 @@ jobs:
       OPSMAN_URI: {{OPSMAN_URI}}
       OPSMAN_USERNAME: {{OPSMAN_USER}}
       OPSMAN_PASSWORD: {{OPSMAN_PASSWORD}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
 
 - name: wipe-env
   serial_groups: [terraform]

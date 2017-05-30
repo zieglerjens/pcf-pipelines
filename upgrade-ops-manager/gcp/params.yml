@@ -15,6 +15,8 @@
 pivnet_token: CHANGEME
 opsman_admin_username: CHANGEME
 opsman_admin_password: CHANGEME
+opsman_client_id:
+opsman_client_secret:
 opsman_passphrase: CHANGEME
 opsman_uri: CHANGEME
 check_new_opsman_every: CHANGEME

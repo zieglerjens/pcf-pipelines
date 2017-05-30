@@ -9,21 +9,28 @@ set -eu
 # then we should fail
 #
 function allow_only_patch_upgrades {
-  if [ "$#" -ne 5 ]; then
+  if [ "$#" -ne 7 ]; then
       echo "Illegal number of arguments."
-      echo "usage: allow_only_patch_upgrades <opsman_uri> <opsman_user> <opsman_pass> <product_name> <product_resource_dir>"
+      echo "usage: allow_only_patch_upgrades <opsman_uri> <opsman_user> <opsman_pass> <opsman_client_id> <opsman_client_secret> <product_name> <product_resource_dir>"
   fi
   local OPS_MGR_HOST=$1
   local OPS_MGR_USR=$2
   local OPS_MGR_PWD=$3
-  local PRODUCT_NAME=$4
-  local PRODUCT_DIR=$5
+  local OPSMAN_CLIENT_ID=$4
+  local OPSMAN_CLIENT_SECRET=$5
+  local PRODUCT_NAME=$6
+  local PRODUCT_DIR=$7
+
+  if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+    CREDS="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+  else
+    CREDS="--username ${OPS_MGR_USR} --password ${OPS_MGR_PWD}"
+  fi
 
   local deployed_version=$(
     om-linux \
       --target "https://${OPS_MGR_HOST}" \
-      --username "${OPS_MGR_USR}" \
-      --password "${OPS_MGR_PWD}" \
+      ${CREDS} \
       --skip-ssl-validation \
       deployed-products | grep "${PRODUCT_NAME}" | awk -F"|" '{print $3 }' | awk -F"." '{print $1"."$2}'
     )

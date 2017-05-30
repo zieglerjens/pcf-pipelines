@@ -157,6 +157,8 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
 
 - name: upload-ert
   plan:
@@ -177,6 +179,8 @@ jobs:
       OPS_MGR_HOST: {{opsman_uri}}
       OPS_MGR_USR: {{opsman_admin_username}}
       OPS_MGR_PWD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       PIVNET_API_TOKEN: {{pivnet_token}}
       NO_PROXY: {{company_proxy_domain}}
       OM_IP: {{om_ip}}
@@ -200,6 +204,8 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       PRODUCT_NAME: cf
 
   - task: configure
@@ -302,6 +308,8 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       ERRANDS_TO_DISABLE: {{ert_errands_to_disable}}
 
   - task: deploy
@@ -310,6 +318,8 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
 
 - name: wipe-env
   plan:
@@ -321,3 +331,5 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{opsman_admin_username}}
       OPSMAN_PASSWORD: {{opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}

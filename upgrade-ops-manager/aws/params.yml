@@ -41,6 +41,8 @@ existing_opsman_vm_name: CHANGEME
 # Ops Manager Admin Credentials - set during the installation of Ops Manager
 opsman_admin_password: CHANGEME
 opsman_admin_username: CHANGEME
+opsman_client_id:
+opsman_client_secret:
 
 # If install pipeline has been used then the passphrase is same as the admin password
 opsman_passphrase: CHANGEME

@@ -2,6 +2,12 @@
 
 set -eu
 
+if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+  CREDS="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+else
+  CREDS="--username ${OPS_MGR_USR} --password ${OPS_MGR_PWD}"
+fi
+
 function generate_cert {
   local domains="$1"
 
@@ -10,8 +16,7 @@ function generate_cert {
   local response=$(
     om-linux \
       --target "https://${OPS_MGR_HOST}" \
-      --username "$OPS_MGR_USR" \
-      --password "$OPS_MGR_PWD" \
+      ${CREDS} \
       --skip-ssl-validation \
       curl \
       --silent \

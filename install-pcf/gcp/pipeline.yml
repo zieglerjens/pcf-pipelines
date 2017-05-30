@@ -63,6 +63,8 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{pcf_opsman_admin_username}}
       OPSMAN_PASSWORD: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
 
 - name: upload-opsman-image
   plan:
@@ -159,6 +161,8 @@ jobs:
       pcf_ert_domain: {{pcf_ert_domain}}
       pcf_opsman_admin_username: {{pcf_opsman_admin_username}}
       pcf_opsman_admin_password: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
   - task: configure-director
     file: pcf-pipelines/install-pcf/gcp/tasks/config-director/task.yml
     params:
@@ -209,6 +213,8 @@ jobs:
       OPS_MGR_HOST: {{opsman_uri}}
       OPS_MGR_USR: {{pcf_opsman_admin_username}}
       OPS_MGR_PWD: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       PIVNET_API_TOKEN: {{pivnet_token}}
       IAAS: "google"
       NO_PROXY: ""
@@ -220,6 +226,8 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{pcf_opsman_admin_username}}
       OPSMAN_PASSWORD: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       PRODUCT_NAME: cf
 
 - name: deploy-ert
@@ -248,6 +256,8 @@ jobs:
       pcf_ert_domain: {{pcf_ert_domain}}
       pcf_opsman_admin: {{pcf_opsman_admin_username}}
       pcf_opsman_admin_passwd: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       terraform_prefix: {{gcp_resource_prefix}}
       db_diego_username: {{db_diego_username}}
       db_diego_password: {{db_diego_password}}
@@ -297,6 +307,8 @@ jobs:
       pcf_ert_domain: {{pcf_ert_domain}}
       pcf_opsman_admin: {{pcf_opsman_admin_username}}
       pcf_opsman_admin_passwd: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
 
   - task: disable-errands
     file: pcf-pipelines/tasks/disable-errands/task.yml
@@ -305,6 +317,8 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{pcf_opsman_admin_username}}
       OPSMAN_PASSWORD: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}
       ERRANDS_TO_DISABLE: {{ert_errands_to_disable}}
 
   - task: deploy-ert
@@ -313,3 +327,5 @@ jobs:
       OPSMAN_URI: {{opsman_uri}}
       OPSMAN_USERNAME: {{pcf_opsman_admin_username}}
       OPSMAN_PASSWORD: {{pcf_opsman_admin_password}}
+      OPSMAN_CLIENT_ID: {{opsman_client_id}}
+      OPSMAN_CLIENT_SECRET: {{opsman_client_secret}}

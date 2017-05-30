@@ -174,25 +174,29 @@ jq \
   }'
 )
 
+if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+  CREDS="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+else
+  CREDS="--username ${OPS_MGR_USR} --password ${OPS_MGR_PWD}"
+fi
+
 echo "Configuring IaaS and Director..."
 om-linux \
   --target https://$OPS_MGR_HOST \
   --skip-ssl-validation \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  ${CREDS} \
   configure-bosh \
   --iaas-configuration "$iaas_configuration" \
   --director-configuration "$director_config"
 
-om-linux -t https://$OPS_MGR_HOST -k -u $OPS_MGR_USR -p $OPS_MGR_PWD \
+om-linux -t https://$OPS_MGR_HOST -k ${CREDS} \
   curl -p "/api/v0/staged/director/availability_zones" \
   -x PUT -d "$az_configuration"
 
 om-linux \
   --target https://$OPS_MGR_HOST \
   --skip-ssl-validation \
-  --username $OPS_MGR_USR \
-  --password $OPS_MGR_PWD \
+  ${CREDS} \
   configure-bosh \
   --networks-configuration "$network_configuration" \
   --network-assignment "$network_assignment" \

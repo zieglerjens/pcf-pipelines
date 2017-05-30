@@ -22,9 +22,14 @@ function fn_om_linux_curl {
   local curl_path=$2
   local curl_data=$3
 
+  if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+    local creds="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+  else
+    local creds="--username ${pcf_opsman_admin} --password ${pcf_opsman_admin_passwd}"
+  fi
+
   args="--target https://opsman.$pcf_ert_domain -k \
-    --username $pcf_opsman_admin \
-    --password $pcf_opsman_admin_passwd  \
+    ${creds} \
     curl \
     --request $curl_method \
     --path $curl_path"

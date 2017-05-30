@@ -194,11 +194,16 @@ for json in "${jsons[@]}"; do
   echo "$json" | jq '.'
 done
 
+if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+  CREDS="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+else
+  CREDS="--username ${OPSMAN_USER} --password ${OPSMAN_PASSWORD}"
+fi
+
 om-linux \
   --target https://opsman.$ERT_DOMAIN \
   --skip-ssl-validation \
-  --username $OPSMAN_USER \
-  --password $OPSMAN_PASSWORD \
+  ${CREDS} \
   configure-bosh \
   --iaas-configuration "$iaas_configuration" \
   --director-configuration "$director_configuration" \

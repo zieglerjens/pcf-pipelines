@@ -6,14 +6,19 @@ if [[ -n "$NO_PROXY" ]]; then
   echo "$OM_IP $OPS_MGR_HOST" >> /etc/hosts
 fi
 
+if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+  CREDS="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+else
+  CREDS="--username ${OPS_MGR_USR} --password ${OPS_MGR_PWD}"
+fi
+
 STEMCELL_VERSION=`cat ./pivnet-product/metadata.json | jq --raw-output '.Dependencies[] | select(.Release.Product.Name | contains("Stemcells")) | .Release.Version'`
 
 if [ -n "$STEMCELL_VERSION" ]; then
   diagnostic_report=$(
     om-linux \
       --target https://$OPS_MGR_HOST \
-      --username $OPS_MGR_USR \
-      --password $OPS_MGR_PWD \
+      ${CREDS} \
       --skip-ssl-validation \
       curl --silent --path "/api/v0/diagnostic_report"
   )
@@ -38,7 +43,7 @@ if [ -n "$STEMCELL_VERSION" ]; then
       exit 1
     fi
 
-    om-linux -t https://$OPS_MGR_HOST -u $OPS_MGR_USR -p $OPS_MGR_PWD -k upload-stemcell -s $SC_FILE_PATH
+    om-linux -t https://$OPS_MGR_HOST ${CREDS} -k upload-stemcell -s $SC_FILE_PATH
 
     echo "Removing downloaded stemcell $STEMCELL_VERSION"
     rm $SC_FILE_PATH
@@ -46,4 +51,4 @@ if [ -n "$STEMCELL_VERSION" ]; then
 fi
 
 FILE_PATH=`find ./pivnet-product -name *.pivotal`
-om-linux -t https://$OPS_MGR_HOST -u $OPS_MGR_USR -p $OPS_MGR_PWD -k --request-timeout 3600 upload-product -p $FILE_PATH
+om-linux -t https://$OPS_MGR_HOST ${CREDS} -k --request-timeout 3600 upload-product -p $FILE_PATH

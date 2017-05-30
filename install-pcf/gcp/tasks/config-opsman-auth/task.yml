@@ -13,6 +13,8 @@ params:
   pcf_ert_domain:
   pcf_opsman_admin_username:
   pcf_opsman_admin_password:
+  OPSMAN_CLIENT_ID:
+  OPSMAN_CLIENT_SECRET:
 
 run:
   path: pcf-pipelines/install-pcf/gcp/tasks/config-opsman-auth/task.sh

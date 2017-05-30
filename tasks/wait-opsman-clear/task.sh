@@ -25,14 +25,19 @@ function main() {
   local cwd
   cwd="${1}"
 
+  if [[ -n ${OPSMAN_CLIENT_ID} ]]; then
+    CREDS="--client-id ${OPSMAN_CLIENT_ID} --client-secret ${OPSMAN_CLIENT_SECRET}"
+  else
+    CREDS="--username ${OPSMAN_USERNAME} --password ${OPSMAN_PASSWORD}"
+  fi
+
   set +e
   while :
   do
 
       om-linux --target "https://${OPSMAN_URI}" \
            --skip-ssl-validation \
-           --username "${OPSMAN_USERNAME}" \
-           --password "${OPSMAN_PASSWORD}" \
+           ${CREDS} \
             curl -path /api/v0/staged/pending_changes > changes-status.txt
 
       if [[ $? -ne 0 ]]; then
@@ -43,8 +48,7 @@ function main() {
 
       om-linux --target "https://${OPSMAN_URI}" \
            --skip-ssl-validation \
-           --username "${OPSMAN_USERNAME}" \
-           --password "${OPSMAN_PASSWORD}" \
+           ${CREDS} \
            curl -path /api/v0/installations > running-status.txt
 
       if [[ $? -ne 0 ]]; then
