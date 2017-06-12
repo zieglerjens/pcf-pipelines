@@ -173,7 +173,7 @@ jq \
   '. +
   {
     "singleton_availability_zone": ($infra_availability_zones | split(",") | .[0]),
-    "network": $infra_network_name
+    "network": $network
   }'
 )
 
