@@ -186,7 +186,10 @@ om-linux \
   configure-bosh \
   --iaas-configuration "$iaas_configuration" \
   --director-configuration "$director_config" \
-  --az-configuration "$az_configuration" \
   --networks-configuration "$network_configuration" \
   --network-assignment "$network_assignment" \
   --security-configuration "$security_configuration"
+
+om-linux -t https://$OPS_MGR_HOST -k -u $OPS_MGR_USR -p $OPS_MGR_PWD \
+  curl -p "/api/v0/staged/director/availability_zones" \
+  -x PUT -d "$az_configuration"
