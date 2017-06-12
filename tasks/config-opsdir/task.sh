@@ -185,11 +185,18 @@ om-linux \
   --password $OPS_MGR_PWD \
   configure-bosh \
   --iaas-configuration "$iaas_configuration" \
-  --director-configuration "$director_config" \
-  --networks-configuration "$network_configuration" \
-  --network-assignment "$network_assignment" \
-  --security-configuration "$security_configuration"
+  --director-configuration "$director_config"
 
 om-linux -t https://$OPS_MGR_HOST -k -u $OPS_MGR_USR -p $OPS_MGR_PWD \
   curl -p "/api/v0/staged/director/availability_zones" \
   -x PUT -d "$az_configuration"
+
+om-linux \
+  --target https://$OPS_MGR_HOST \
+  --skip-ssl-validation \
+  --username $OPS_MGR_USR \
+  --password $OPS_MGR_PWD \
+  configure-bosh \
+  --networks-configuration "$network_configuration" \
+  --network-assignment "$network_assignment" \
+  --security-configuration "$security_configuration"
