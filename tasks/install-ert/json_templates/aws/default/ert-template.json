@@ -92,14 +92,6 @@
           "secret": "{{db_routing_password}}"
         }
       },
-      ".properties.system_database.external.uaa_username": {
-        "value": "{{db_uaa_username}}"
-      },
-      ".properties.system_database.external.uaa_password": {
-        "value": {
-          "secret": "{{db_uaa_password}}"
-        }
-      },
       ".properties.system_database.external.ccdb_username": {
         "value": "{{db_ccdb_username}}"
       },

@@ -47,8 +47,6 @@ terraform plan \
   -var "db_notifications_password=${DB_NOTIFICATIONS_PASSWORD}" \
   -var "db_routing_username=${DB_ROUTING_USERNAME}" \
   -var "db_routing_password=${DB_ROUTING_PASSWORD}" \
-  -var "db_uaa_username=${DB_UAA_USERNAME}" \
-  -var "db_uaa_password=${DB_UAA_PASSWORD}" \
   -var "db_ccdb_username=${DB_CCDB_USERNAME}" \
   -var "db_ccdb_password=${DB_CCDB_PASSWORD}" \
   -var "db_accountdb_username=${DB_ACCOUNTDB_USERNAME}" \

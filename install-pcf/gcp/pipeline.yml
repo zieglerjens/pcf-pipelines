@@ -130,8 +130,6 @@ jobs:
       DB_NOTIFICATIONS_PASSWORD: {{db_notifications_password}}
       DB_ROUTING_USERNAME: {{db_routing_username}}
       DB_ROUTING_PASSWORD: {{db_routing_password}}
-      DB_UAA_USERNAME: {{db_uaa_username}}
-      DB_UAA_PASSWORD: {{db_uaa_password}}
       DB_CCDB_USERNAME: {{db_ccdb_username}}
       DB_CCDB_PASSWORD: {{db_ccdb_password}}
       DB_ACCOUNTDB_USERNAME: {{db_accountdb_username}}
@@ -258,8 +256,6 @@ jobs:
       db_notifications_password: {{db_notifications_password}}
       db_autoscale_username: {{db_autoscale_username}}
       db_autoscale_password: {{db_autoscale_password}}
-      db_uaa_username: {{db_uaa_username}}
-      db_uaa_password: {{db_uaa_password}}
       db_app_usage_service_username: {{db_app_usage_service_username}}
       db_app_usage_service_password: {{db_app_usage_service_password}}
       db_ccdb_username: {{db_ccdb_username}}

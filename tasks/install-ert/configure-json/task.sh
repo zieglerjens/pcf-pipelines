@@ -130,8 +130,6 @@ db_creds=(
   db_notifications_password
   db_routing_username
   db_routing_password
-  db_uaa_username
-  db_uaa_password
   db_ccdb_username
   db_ccdb_password
   db_accountdb_username

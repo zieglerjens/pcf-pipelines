@@ -26,8 +26,6 @@ variable "db_notifications_username" {}
 variable "db_notifications_password" {}
 variable "db_autoscale_username" {}
 variable "db_autoscale_password" {}
-variable "db_uaa_username" {}
-variable "db_uaa_password" {}
 variable "db_app_usage_service_username" {}
 variable "db_app_usage_service_password" {}
 variable "db_ccdb_username" {}

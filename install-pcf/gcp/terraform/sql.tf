@@ -124,14 +124,6 @@ resource "google_sql_user" "autoscale" {
   depends_on = ["google_sql_user.notifications"]
 }
 
-resource "google_sql_user" "uaa" {
-  name       = "${var.db_uaa_username}"
-  password   = "${var.db_uaa_password}"
-  instance   = "${google_sql_database_instance.master.name}"
-  host       = "%"
-  depends_on = ["google_sql_user.autoscale"]
-}
-
 resource "google_sql_user" "app_usage_service" {
   name       = "${var.db_app_usage_service_username}"
   password   = "${var.db_app_usage_service_password}"
