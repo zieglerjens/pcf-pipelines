@@ -18,21 +18,23 @@ function allow_only_patch_upgrades {
   local OPS_MGR_PWD=$3
   local PRODUCT_NAME=$4
   local PRODUCT_DIR=$5
-
-  local deployed_version=$(
-    om-linux \
+  
+  local deployed_products=$(om-linux \
       --target "https://${OPS_MGR_HOST}" \
       --username "${OPS_MGR_USR}" \
       --password "${OPS_MGR_PWD}" \
       --skip-ssl-validation \
-      deployed-products | grep "${PRODUCT_NAME}" | awk -F"|" '{print $3 }' | awk -F"." '{print $1"."$2}'
-    )
-  if [[ `ls ${PRODUCT_DIR} | grep ${deployed_version}` ]]; then
+      deployed-products)
+
+  local deployed_version=$( filter_deployed_product_versions "${deployed_products}" "${PRODUCT_NAME}" )
+  local product_list=$(ls "${PRODUCT_DIR}")
+
+  if versions_are_allowed "${product_list}" "${deployed_version}"; then
     echo "we have a safe upgrade for version: ${deployed_version}";
 
   else
     echo "You are trying to install version: "
-    ls ${PRODUCT_DIR}
+    echo "${product_list}"
     echo
     echo "Your currently deployed version is: "
     echo "$deployed_version"
@@ -48,3 +50,32 @@ function allow_only_patch_upgrades {
     exit 1
   fi
 }
+
+function filter_deployed_product_versions {
+  if [[ $# != 2 ]]; then
+    echo "sorry we expected 1 argument: <om-linux deployed-products output> <product-name>"
+    return 0 
+  fi
+  deployed_products=$1
+  product_name=$2
+  version=$(echo "${deployed_products}" | grep "${product_name}" | awk -F"|" '{print $3 }' | awk -F"." '{print $1"."$2}')
+  echo ${version// }
+}
+
+
+function versions_are_allowed {
+  if [[ $# != 2 ]]; then
+    echo "sorry we expected 2 arguments: <product-dir-files-list> & <deployed_version_major_minor>"
+    return 0
+  fi
+  
+  FILE_LIST=$1
+  VERSION=$2
+
+  if echo "${FILE_LIST}" | grep "${VERSION// }"; then
+    return 0
+  else 
+    return 1
+  fi
+}
+
