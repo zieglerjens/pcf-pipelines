@@ -53,7 +53,7 @@ function allow_only_patch_upgrades {
 
 function filter_deployed_product_versions {
   if [[ $# != 2 ]]; then
-    echo "sorry we expected 1 argument: <om-linux deployed-products output> <product-name>"
+    echo "sorry we expected 2 arguments: <om-linux deployed-products output> <product-name>"
     return 0 
   fi
   deployed_products=$1
