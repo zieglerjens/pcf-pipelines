@@ -58,7 +58,7 @@ function filter_deployed_product_versions {
   fi
   deployed_products=$1
   product_name=$2
-  version=$(echo "${deployed_products}" | grep "${product_name}" | awk -F"|" '{print $3 }' | awk -F"." '{print $1"."$2}')
+  version=$(echo "${deployed_products}" | grep "|.*\ ${product_name}\ .*|" | awk -F"|" '{print $3 }' | awk -F"." '{print $1"."$2}')
   echo ${version// }
 }
 

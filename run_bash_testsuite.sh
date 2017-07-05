@@ -20,23 +20,30 @@ if [[ $# != 1 ]]; then
 fi
 
 TEST_DIR=$1
-
 TESTFILES=$(find "${TEST_DIR}" -name "*_test.sh")
 EXITCODE=0
+
 for test in ${TESTFILES}; do
    echo "running tests in: ${test}"
-   ${test} "${TEST_DIR}"
-   code=$?
-   if [[ ${code} != 0 ]]; then
-      EXITCODE=${code}
-      setred 
-      echo "(test failed !!!!! )"
-      setdefault 
-   else 
+   source ${test} "${TEST_DIR}"
+done
+
+for testFunc in $(typeset -f | grep '^Test.*()' | awk '{print $1}'); do
+   echo "running test: ${testFunc}"
+   if eval "${testFunc} >> test.out"; then
       setgreen 
       echo "(test passed)"
       setdefault 
+   else
+      EXITCODE=1
+      setred 
+      echo "(test failed !!!!! )"
+      setdefault 
    fi
+   cat test.out
+   echo 
+   echo "----------------------------------------------------"
+   echo
+   rm test.out
 done
 exit ${EXITCODE}
-
