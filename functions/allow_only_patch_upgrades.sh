@@ -13,6 +13,7 @@ function allow_only_patch_upgrades {
       echo "Illegal number of arguments."
       echo "usage: allow_only_patch_upgrades <opsman_uri> <opsman_user> <opsman_pass> <product_name> <product_resource_dir>"
   fi
+  local EXITCODE=0
   local OPS_MGR_HOST=$1
   local OPS_MGR_USR=$2
   local OPS_MGR_PWD=$3
@@ -30,7 +31,12 @@ function allow_only_patch_upgrades {
   local product_list=$(ls "${PRODUCT_DIR}")
 
   if versions_are_allowed "${product_list}" "${deployed_version}"; then
-    echo "we have a safe upgrade for version: ${deployed_version}";
+    if [[ ${deployed_version// } == "" ]];then
+      echo "version check yielded empty version information"
+      EXITCODE=1 
+    else 
+      echo "we have a safe upgrade for version: ${deployed_version}";
+    fi
 
   else
     echo "You are trying to install version: "
@@ -47,8 +53,9 @@ function allow_only_patch_upgrades {
     echo
     echo "To upgrade patch releases, we suggest using the following version regex in your params file:"
     echo "$deployed_version" | awk -F"." '{print "^"$1"\\\."$2"\\..*$"}'
-    exit 1
+    EXITCODE=1 
   fi
+  return ${EXITCODE}
 }
 
 function filter_deployed_product_versions {
