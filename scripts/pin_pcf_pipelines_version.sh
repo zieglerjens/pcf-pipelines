@@ -8,7 +8,7 @@ root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 overwrite=""
 dir="${root}/.."
 
-while getopts v:w: option; do
+while getopts v:w:d: option; do
  case "${option}" in
  v)
     version=${OPTARG};;
