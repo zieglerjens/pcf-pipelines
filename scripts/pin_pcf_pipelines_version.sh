@@ -69,7 +69,7 @@ for f in ${files[@]}; do
 
     mv "${f}.pinned" $filename
 
-    if [[ $has_fly_fmt == 0 ]]; then
+    if [[ $has_fly_fmt -eq 0 ]]; then
       fly fmt --write --config $filename
     fi
   else
