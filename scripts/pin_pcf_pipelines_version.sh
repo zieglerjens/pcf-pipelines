@@ -5,16 +5,18 @@ set -o pipefail
 
 overwrite=""
 
+root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 while getopts v:w: option; do
  case "${option}" in
  v)
-   version=${OPTARG};;
+    version=${OPTARG};;
  w)
-   overwrite=${OPTARG:-"false"};;
+    overwrite=${OPTARG:-"false"};;
+ d)
+    dir=${OPTARG:-"${root}/.."}
  esac
 done
-
-root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [[ $(fly -h 2>&1 | grep fmt -c) ]]; then
   has_fly_fmt=0
@@ -47,13 +49,16 @@ EOF
 
 files=$(
   find \
-    "$root/.." \
+    "$root/pcf-pipelines" \
     -type f \
     -name pipeline.yml |
   grep -v ci
 )
 
+echo "Found files: $files"
+
 for f in ${files[@]}; do
+  echo $f
   if [[ $( cat $f | yaml-patch -o <(echo "$test_for_pcf_pipelines_git") 2>/dev/null ) ]]; then
     echo "Pinning ${f}"
     cat $f |
@@ -70,5 +75,7 @@ for f in ${files[@]}; do
     if [[ $has_fly_fmt == 0 ]]; then
       fly fmt --write --config $filename
     fi
+  else
+    echo "not pinning $f"
   fi
 done

@@ -2,7 +2,7 @@ resources:
 - name: pcf-pipelines
   type: git
   source:
-    branch: wip-khicks # only-tags
+    branch: wip-khicks-add-pcf-pipelines-pinned # only-tags
     private_key: {{git_private_key}}
     uri: git@github.com:pivotal-cf/pcf-pipelines.git
 
@@ -38,15 +38,21 @@ jobs:
         - |
           set -eu
 
-          version=$(cat pcf-pipelines/version)
-
           git config --global user.name $GIT_USER
           git config --global user.email $GIT_EMAIL
 
           git clone ./pcf-pipelines pcf-pipelines-pinned
 
           pushd pcf-pipelines-pinned 1>/dev/null
-            ./scripts/pin_pcf_pipelines_version.sh -v $version -w true
+            version=$(
+              if [[ $(git describe --tags --exact-match $(git rev-parse HEAD) 2>/dev/null) ]]; then
+                echo $(git describe HEAD --tags)
+              else
+                echo $(git rev-parse HEAD)
+              fi
+            )
+
+            ./scripts/pin_pcf_pipelines_version.sh -v $version -w true -d .
 
             git add -A
             git commit -m "Bump pinned pipelines to ${version}"
