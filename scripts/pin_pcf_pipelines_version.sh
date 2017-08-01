@@ -56,13 +56,10 @@ files=$(
   grep -v ci
 )
 
-echo "Found files: $files"
-
 for f in ${files[@]}; do
   if [[ $( cat $f | yaml-patch -o <(echo "$test_for_pcf_pipelines_git") 2>/dev/null ) ]]; then
     echo "Pinning ${f}"
-    cat $f |
-    yaml-patch -o <(echo "$pin_pcf_pipelines") > "${f}.pinned"
+    cat $f | yaml-patch -o <(echo "$pin_pcf_pipelines") > "${f}.pinned"
 
     if [[ "${overwrite}" == "true" ]]; then
       filename=$f
@@ -76,6 +73,6 @@ for f in ${files[@]}; do
       fly fmt --write --config $filename
     fi
   else
-    echo "not pinning $f"
+    echo "Skipping $f"
   fi
 done
