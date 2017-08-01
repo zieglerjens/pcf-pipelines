@@ -3,9 +3,10 @@
 set -eu
 set -o pipefail
 
-overwrite=""
-
 root="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+overwrite=""
+dir="${root}/.."
 
 while getopts v:w: option; do
  case "${option}" in
@@ -14,7 +15,7 @@ while getopts v:w: option; do
  w)
     overwrite=${OPTARG:-"false"};;
  d)
-    dir=${OPTARG:-"${root}/.."}
+    dir=${OPTARG};;
  esac
 done
 
@@ -49,7 +50,7 @@ EOF
 
 files=$(
   find \
-    "$root/pcf-pipelines" \
+    $dir \
     -type f \
     -name pipeline.yml |
   grep -v ci
@@ -58,7 +59,6 @@ files=$(
 echo "Found files: $files"
 
 for f in ${files[@]}; do
-  echo $f
   if [[ $( cat $f | yaml-patch -o <(echo "$test_for_pcf_pipelines_git") 2>/dev/null ) ]]; then
     echo "Pinning ${f}"
     cat $f |
