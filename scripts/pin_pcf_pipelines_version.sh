@@ -19,7 +19,7 @@ while getopts v:w:d: option; do
  esac
 done
 
-if [[ $(fly -h 2>&1 | grep fmt -c) ]]; then
+if [[ $(which fly && fly -h 2>&1 | grep fmt -c) ]]; then
   has_fly_fmt=0
 else
   has_fly_fmt=1
