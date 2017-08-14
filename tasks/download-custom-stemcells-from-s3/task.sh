@@ -20,6 +20,9 @@ function main() {
   if [[ -z "${AWS_ACCESS_KEY_ID}" ]]; then abort "The required env var AWS_ACCESS_KEY_ID was not set"; fi
   if [[ -z "${AWS_SECRET_ACCESS_KEY}" ]]; then abort "The required env var AWS_SECRET_ACCESS_KEY was not set"; fi
   if [[ -z "${S3_BUCKET_NAME}" ]]; then abort "The required env var S3_BUCKET_NAME was not set"; fi
+  if [[ -z "${S3_ENDPOINT}" ]]; then
+    S3_ENDPOINT=https://s3.amazonaws.com
+  fi
 
   local cwd="${PWD}"
   local download_dir="${cwd}/stemcells"
