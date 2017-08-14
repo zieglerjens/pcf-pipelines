@@ -30,7 +30,7 @@ params:
   AWS_ACCESS_KEY_ID:
   AWS_SECRET_ACCESS_KEY:
   S3_BUCKET_NAME:
-  S3_ENDPOINT:
+  S3_ENDPOINT: https://s3.amazonaws.com
 
 run:
   path: pcf-pipelines/tasks/download-custom-stemcells-from-s3/task.sh

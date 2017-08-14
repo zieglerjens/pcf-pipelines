@@ -32,9 +32,8 @@ function main() {
     exit 0
   fi
 
-  mkdir -p "${download_dir}"
-
   # extract the stemcell version from the filename, e.g. 3312.21, and download the file from s3
+  echo "Using s3 endpoint: ${S3_ENDPOINT}"
   for stemcell in "${stemcells[@]}"; do
     if [[ -z $(aws s3 --endpoint-url ${S3_ENDPOINT} ls "s3://${S3_BUCKET_NAME}/${stemcell}") ]]; then
       abort "Could not find ${stemcell} in s3://${S3_BUCKET_NAME}."
