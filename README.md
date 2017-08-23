@@ -114,6 +114,31 @@ Our goal is to at least support the latest version of PCF with these pipelines. 
 
 Compatbility is generally only an issue whenever Pivotal releases a new version of PCF software that requires additional configuration in Ops Manager. These new required fields then need to be either manually configured outside the pipeline, or supplied via a new configuration added to the pipeline itself.
 
+## Pipelines for airgapped environments
+
+Most of the pipelines expect to be able to pull artifacts from the Internet, including from Pivotal Network and Dockerhub. In airgrapped environments this isn't feasible; all artifacts must be provided in an alternate manner.
+
+For the pipelines, this means replacing resource definitions of type `pivnet` and `docker-image` (including `image_resource` definitions that use `docker-image`) with a type that can be easily provided in an airgapped environment; the go-to here is the [S3 resource](https://github.com/concourse/s3-resource) that ships with Concourse. The S3 resource can be used with any of a number of S3-compatible blobstores, such as [Minio](https://minio.io/) or [Dell EMC Elastic Cloud Storage](https://www.dellemc.com/en-us/storage/ecs/index.htm). In some cases this will also mean modifying tasks if they happen to also try to reach out to the Internet, replacing them with versions that pull from S3 instead.
+
+***Note: To use S3 for the type of `image_resource` you must use Concourse 3.3.3 or greater.***
+
+With the resources definitions swapped out, all that needs to happen is to get the artifacts from the Internet into the S3 blobstore that is accessible from the airgapped environment.
+
+The first pipeline that we are providing with an offline variant is the vSphere Install PCF pipeline. The opfile used to create that pipeline from the online pipeline is in [operations](operations).
+
+### Getting artifacts into S3 for offline use
+
+In some airgapped environments access to S3 may be shared between an environment that does have Internet access; this means a simple pipeline that pulls artifacts from the Internet and puts them in the appropriate places in S3 is simple enough. Other airgapped environments do not have this ability, and require artifacts to be transferred physically to the environment.
+
+For the latter arrangement, two new pipelines have been created to facilitate the physical transfer of artifacts:
+
+* create-offline-pinned-pipelines
+* unpack-pcf-pipelines-combined
+
+`create-offline-pinned-pipelines` is there to pull artifacts from the Internet and create a single artifact, a GPG-encrypted tarball that contains all the resources that the vSphere Install PCF pipeline requires. This includes the PCF Operations Manager image, the PCF Elastic Runtime tile and the stemcell it requires, the rootfs that is used by Concourse to run tasks, and a modified version of the vSphere Install PCF pipeline that is pinned to the particular versions of those resources that were downloaded. It also contains a shasum manifest, MANIFEST.MF, which contains SHAs of all the files within.
+
+`unpack-pcf-pipelines-combined` is meant to run within the airgapped environment. Its job is to look for the single artifact in S3 within a `pcf-pipelines-combined/` folder in the configured bucket. This means the artifact needs to be put there by someone or some thing; presently this can be done via the AWS CLI pointed at the S3 blobstore. When it detects a new version of the single artifact in that folder it pulls it down, decrypts it, and extracts the contents, putting them into the appropriate locations in S3 such that the Install PCF pipeline can pull them.
+
 ## Contributing
 
 ### Pipelines and Tasks
