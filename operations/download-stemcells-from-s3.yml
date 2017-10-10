@@ -1,0 +1,38 @@
+- op: replace
+  path: /jobs/task=download-stemcells
+  value:
+    task: download-stemcells
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: czero/cflinuxfs2
+      inputs:
+      - name: diagnostic-report
+      outputs:
+      - name: stemcells
+      params:
+        S3_ACCESS_KEY_ID: ((s3_access_key_id))
+        S3_SECRET_ACCESS_KEY: ((s3_secret_access_key))
+        S3_BUCKET: ((s3_bucket))
+        S3_ENDPOINT: ((s3_endpoint))
+        OPS_MGR_DOMAIN: ((opsman_domain_or_ip_address))
+        OPS_MGR_USERNAME: ((opsman_admin_username))
+        OPS_MGR_PASSWORD: ((opsman_admin_password))
+      run:
+        path: bash
+        args:
+        - -c
+        - |
+          set -eu
+
+          diagnostic_report=$(ls diagnostic-report/*.json)
+
+          stemcells=$(
+            jq --raw-output '.added_products.deployed | map(.stemcell) | unique | .[]' < $diagnostic_report
+          )
+
+          for stemcell in "$stemcells"; do
+            aws s3 --endpoint-url $S3_ENDPOINT cp "s3://${S3_BUCKET}/stemcells/${stemcell}" stemcells/
+          done

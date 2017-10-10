@@ -1,0 +1,16 @@
+- op: replace
+  path: /resources/name=pivnet-opsmgr
+  value:
+    name: pivnet-opsmgr
+    type: s3
+    source:
+      access_key_id: ((s3_access_key_id))
+      secret_access_key: ((s3_secret_access_key))
+      endpoint: ((s3_endpoint))
+      bucket: ((s3_bucket))
+      regexp: "ops-manager/ops-manager-(.*).tar"
+    params:
+      unpack: true
+
+- op: remove
+  path: /jobs/get=pivnet-opsmgr/params/globs
