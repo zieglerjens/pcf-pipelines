@@ -29,9 +29,26 @@ gcp:
   project: ${GCP_PROJECT_ID}
   disk_image_url: dontmatter
 EOF
-set +e
-cliaas-linux -c cliaas_config.yml delete-vm -i "${GCP_RESOURCE_PREFIX}-ops-manager"
-set -e
+
+# Get a list of opsman machines
+gcloud auth activate-service-account --key-file gcpcreds.json
+gcloud config set project $GCP_PROJECT_ID
+OPSMAN_INSTANCES=$(gcloud compute instances list --filter "NAME ~ '$GCP_RESOURCE_PREFIX-ops-manager'" --format json | jq -r '.[].name')
+
+for OPSMAN_INSTANCE in $OPSMAN_INSTANCES; do
+  cliaas-linux -c cliaas_config.yml delete-vm -i "${OPSMAN_INSTANCE}"
+done
+
+# cliaas is asynch. Spin for a little bit before proceeding
+for attempt in $(seq 60); do
+  REMAINING=$(gcloud compute instances list --filter "NAME ~ '$GCP_RESOURCE_PREFIX-ops-manager'" --format json | jq '.|length')
+  if [ "$REMAINING" -gt 0 ]; then
+    echo "$REMAINING opsman machines remaining..."
+    sleep 2
+  else
+    break
+  fi
+done
 
 echo "Deleting provisioned infrastructure..."
 terraform destroy -force \
