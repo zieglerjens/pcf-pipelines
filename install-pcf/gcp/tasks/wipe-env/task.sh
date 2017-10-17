@@ -29,7 +29,9 @@ gcp:
   project: ${GCP_PROJECT_ID}
   disk_image_url: dontmatter
 EOF
+set +e
 cliaas-linux -c cliaas_config.yml delete-vm -i "${GCP_RESOURCE_PREFIX}-ops-manager"
+set -e
 
 echo "Deleting provisioned infrastructure..."
 terraform destroy -force \
