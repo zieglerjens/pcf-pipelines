@@ -19,6 +19,18 @@ if [[ $opsman_available == "available" ]]; then
     delete-installation
 fi
 
+# Create cliaas config
+
+echo "$GCP_SERVICE_ACCOUNT_KEY" > gcpcreds.json
+cat > cliaas_config.yml <<EOF
+gcp:
+  credfile: gcpcreds.json
+  zone: ${OPSMAN_ZONE}
+  project: ${GCP_PROJECT_ID}
+  disk_image_url: dontmatter
+EOF
+cliaas-linux -c cliaas_config.yml delete-vm -i "${GCP_RESOURCE_PREFIX}-ops-manager"
+
 echo "Deleting provisioned infrastructure..."
 terraform destroy -force \
   -state $root/terraform-state/*.tfstate \
