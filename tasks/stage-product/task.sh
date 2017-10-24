@@ -41,11 +41,11 @@ jq -n "$UNSTAGED_ALL" \
 )
 
 # There should be only one such unstaged product.
-if [ "$(echo $UNSTAGED_PRODUCT | jq '. | length')" -ne "1" ]; then
-  echo "Need exactly one unstaged build for $PRODUCT_NAME version $desired_version"
-  jq -n "$UNSTAGED_PRODUCT"
-  exit 1
-fi
+#if [ "$(echo $UNSTAGED_PRODUCT | jq '. | length')" -ne "1" ]; then
+#  echo "Need exactly one unstaged build for $PRODUCT_NAME version $desired_version"
+#  jq -n "$UNSTAGED_PRODUCT"
+#  exit 1
+#fi
 
 full_version=$(echo "$UNSTAGED_PRODUCT" | jq -r '.[].product_version')
 
